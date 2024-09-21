@@ -19,15 +19,15 @@ app.post("/signup", async function(req,res){
     let ErrorThrown = false ;
 
     const requiredBody = z.object({
-        email : z.string().email(),
+        email : z.string(),
         name : z.string().min(3).max(20),
-        passwd : z.string().min(6).max(50)
+        password : z.string().min(4).max(50)
     });
 
     const parsedData = requiredBody.safeParse(req.body);
 
     if(!parsedData.success){
-        res.json({
+        return res.json({
             message : "Incorrect Inputs",
             error : parsedData.error
         })
@@ -42,7 +42,6 @@ app.post("/signup", async function(req,res){
             email : req.body.email ,
             password : hashedPassword
         })
-        console.log("Hashed Password : ",hashedPassword);
 
     }catch(e){
         res.json({
@@ -64,26 +63,25 @@ app.get( "/signin" , async function(req,res){
     })
 
     if(!response){
-        res.status(403).json({
+        return res.status(403).json({
             message : "User does not Exist"
         })
     }
 
     const password = req.body.password;
-    
     const passwordMatch = await bcrypt.compare(password , response.password)
 
     if (passwordMatch){
         const token  = jwt.sign({
-            id : response._id
+            userId : response._id
         },jwtSec);
 
-        res.json({
+        return res.json({
             token : token
         })
     }
     else {
-        res.json({
+        return res.json({
             message : "Invalid Credentials"
         })
     }
@@ -96,7 +94,7 @@ app.post( "/todo" , AuthMiddleware , async function(req,res){
         title : req.body.title,
         done : req.body.done 
     })
-    res.json({
+    return res.json({
         message : "ToDo Created"
     })
 })
@@ -108,7 +106,7 @@ app.get( "/todos" , AuthMiddleware , async function(req,res){
         userId
     })
 
-    res.json({
+    return res.json({
         todos
     })
 

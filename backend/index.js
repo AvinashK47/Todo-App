@@ -12,6 +12,10 @@ app.use(express.json());
 
 ConnectDB();
 
+app.get("/",function(req,res){
+    return (res.send("Home Page"));
+})
+
 app.post("/signup", async function(req,res){
 
     const passwd = req.body.password ;
@@ -111,6 +115,5 @@ app.get( "/todos" , AuthMiddleware , async function(req,res){
     })
 
 })
-
 
 app.listen(process.env.PORT);
